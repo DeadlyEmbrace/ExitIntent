@@ -7,37 +7,19 @@
  * - return a promise from advisor function
  * - add a handle to the close page button
  * --- /@since ---
+ * --- @since Jul 7, 2019 @version 1.1.0 ---
+ * - Pulled in change by aramlawi that fixes the widget for Mx 7.16 and above
+ * - Replaced test project with a Mx 7.16 one
+ * - Remove commented out code
+ * --- /@since ---
  */
 define([
     "dojo/_base/declare", "mxui/widget/_WidgetBase", "dojo/aspect",
-
-    // "mxui/dom",
-    // "dojo/dom",
-    // "dojo/dom-prop",
-    // "dojo/dom-geometry",
-    // "dojo/dom-class",
-    // "dojo/dom-style",
-    // "dojo/dom-construct",
-    // "dojo/_base/array",
     "dojo/_base/lang",
-    // "dojo/text",
-    // "dojo/html",
-    // "dojo/_base/event",
     "ExitIntent/widget/lib/ConfirmationDialog2"
 
 ], function (declare, _WidgetBase, aspect,
-    // dom,
-    // dojoDom,
-    // dojoProp,
-    // dojoGeometry,
-    // dojoClass,
-    // dojoStyle,
-    // dojoConstruct,
-    // dojoArray,
     dojoLang,
-    // dojoText,
-    // dojoHtml,
-    // dojoEvent
     confirmationDialog2) {
         "use strict";
 
@@ -59,7 +41,6 @@ define([
             _pageForm: null,
 
             postCreate: function () {
-                // console.log(this)
                 logger.debug(this.id + ".postCreate");
             
                 // Changed openPage to openForm2 -- This might be a error in mendix API, so if they fix this it has to be renamed back.
@@ -69,7 +50,6 @@ define([
             },
 
             _aroundFunc: function (origOpenFormInContent) {
-                // console.log('hi');
                 var self = this;
                 var confirm2 = function (args) {
                     new confirmationDialog2({
@@ -90,18 +70,6 @@ define([
                     var theWidget = self;
                     var theRouter = this;
 
-                    // check for changes
-                    // var guidsOnPage = self.mxform._formData._getObjectsFromProviders().map(function(o) {
-                    //         return o._guid
-                    //     }),
-                    //     guidsChanged = false
-                    //
-                    // guidsOnPage.forEach(function(g) {
-                    //     if (!self._isEmptyObject(mx.data.getChanges(g))) {
-                    //         guidsChanged = true;
-                    //     }
-                    // })
-
                     mx.data.action({
                         params: {
                             actionname: theWidget.changesMf,
@@ -118,13 +86,9 @@ define([
                                     no: theWidget.noText,
                                     cancel: theWidget.cancelText,
                                     yesHandler: function () {
-                                        // origNav.apply(theRouter, args);
                                         theWidget._runMicroflow(self.yesMf, self._contextObj, origNav, theRouter, args)
-                                        // theWidget._commitChanges(objectsChanged)
                                     },
                                     noHandler: function () {
-                                        // console.log("cancel handler");
-                                        // origNav.apply(theRouter, args);
                                         if (self.noMf) {
                                             theWidget._runMicroflow(self.noMf, self._contextObj, origNav, theRouter, args)
                                         }
@@ -157,22 +121,6 @@ define([
                 this.handle.remove();
                 this.handle2.remove();
             },
-
-            // striaght commit --
-            // ------------------
-            // use this if you want the widget to commit
-            // ------------------
-            // _commitChanges: function(objects){
-            //   mx.data.commit({
-            //     mxobjs: objects,
-            //     callback: function() {
-            //       console.log('success')
-            //     },
-            //     error: function(err) {
-            //       console.log(err)
-            //     }
-            //   })
-            // },
 
             _runMicroflow: function (mf, obj, cb, scope, args) {
                 if (!obj) return;
