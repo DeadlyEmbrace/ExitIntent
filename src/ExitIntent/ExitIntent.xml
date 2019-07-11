@@ -10,7 +10,7 @@
           <caption>Changes Microflow</caption>
           <category>Behavior</category>
           <description>this microflow will run to determine if your form has changes</description>
-          <returnType type="Void"></returnType>
+          <returnType type="Boolean"></returnType>
       </property>
         <property key="yesMf" type="microflow" required="true" >
             <caption>Yes Microflow</caption>

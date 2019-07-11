@@ -36,7 +36,6 @@ define([
             modalText: "",
 
             // Internal variables.
-            _handles: null,
             _contextObj: null,
             _pageForm: null,
 
@@ -52,6 +51,7 @@ define([
             _aroundFunc: function (origOpenFormInContent) {
                 var self = this;
                 var confirm2 = function (args) {
+                    logger.debug(self.id + ": Show Confirmation dialog");
                     new confirmationDialog2({
                         caption: args.caption,
                         content: args.content,
@@ -65,6 +65,7 @@ define([
                 };
 
                 return function () {
+                    logger.debug(self.id + ": Change check with Context GUID " + self._contextObj.getGuid());
                     var origNav = origOpenFormInContent;
                     var args = arguments;
                     var theWidget = self;
@@ -77,7 +78,7 @@ define([
                             guids: [theWidget._contextObj.getGuid()]
                         },
                         callback: function (guidsChanged) {
-                            console.log(guidsChanged)
+                            console.log(self.id + ": Data changed - " + guidsChanged)
                             if (guidsChanged) {
                                 confirm2({
                                     caption: theWidget.modalText,
@@ -86,11 +87,11 @@ define([
                                     no: theWidget.noText,
                                     cancel: theWidget.cancelText,
                                     yesHandler: function () {
-                                        theWidget._runMicroflow(self.yesMf, self._contextObj, origNav, theRouter, args)
+                                        theWidget._runMicroflow(theWidget.yesMf, theWidget._contextObj, origNav, theRouter, args)
                                     },
                                     noHandler: function () {
-                                        if (self.noMf) {
-                                            theWidget._runMicroflow(self.noMf, self._contextObj, origNav, theRouter, args)
+                                        if (theWidget.noMf) {
+                                            theWidget._runMicroflow(theWidget.noMf, theWidget._contextObj, origNav, theRouter, args)
                                         }
 
                                     },
@@ -112,6 +113,7 @@ define([
 
             update: function (obj, cb) {
                 if (obj) {
+                    logger.debug(this.id + ": Update. Object " + obj.getGuid() + " from context");
                     this._contextObj = obj
                 }
                 cb();
@@ -123,8 +125,11 @@ define([
             },
 
             _runMicroflow: function (mf, obj, cb, scope, args) {
-                if (!obj) return;
-                // console.log('saving ' + obj.getGuid())
+                if (!obj) {
+                    console.error("No object received for microflow call")
+                    return;
+                }
+                logger.debug(this.id + ": Running " + mf + " with object " + obj.getGuid());
                 mx.data.action({
                     params: {
                         actionname: mf,
@@ -142,7 +147,7 @@ define([
                         }
                     },
                     error: function (err) {
-                        console.log('err')
+                        console.error(err);
                     }
                 })
             },
